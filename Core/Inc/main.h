@@ -70,6 +70,8 @@ void Error_Handler(void);
 #define DISP_LED_GPIO_Port GPIOB
 #define DISP_RST_Pin GPIO_PIN_8
 #define DISP_RST_GPIO_Port GPIOB
+#define DISP_D_Cn_Pin GPIO_PIN_9
+#define DISP_D_Cn_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
