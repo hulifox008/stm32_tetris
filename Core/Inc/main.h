@@ -66,6 +66,10 @@ void Error_Handler(void);
 #define SW_IN_GPIO_Port GPIOA
 #define SPI1_CS_Pin GPIO_PIN_6
 #define SPI1_CS_GPIO_Port GPIOB
+#define DISP_LED_Pin GPIO_PIN_7
+#define DISP_LED_GPIO_Port GPIOB
+#define DISP_RST_Pin GPIO_PIN_8
+#define DISP_RST_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
