@@ -19,6 +19,9 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "ili9341.h"
+#include "game.h"
+#include "tetris.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -68,6 +71,8 @@ static void MX_USART1_UART_Init(void);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+uint16_t adcRaw[3];
+
 /* USER CODE END 0 */
 
 /**
@@ -98,9 +103,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_ADC1_Init();
   MX_SPI1_Init();
-  MX_DMA_Init();
+
   MX_I2C2_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
@@ -109,9 +115,54 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  HAL_ADC_Start_DMA(&hadc1, adcRaw, 3);
+
+  ili9341_reset();
+  ili9341_init();
+
+#if 0
+  for(;;) {
+	  uint16_t t;
+	  t = adcRaw[0]*240/4096;
+	  ili9341_fill_rect(0, 0, 10, 320-t, COLOR(0,0,0x00));
+	  ili9341_fill_rect(0, 320-t, 10, t, COLOR(0,0,0x1f));
+
+	  t = adcRaw[1]*240/4096;
+	  ili9341_fill_rect(0, 310, t, 10, COLOR(0x1F,0,0x00));
+	  ili9341_fill_rect(t, 310, 240-t, 10, COLOR(0,0,0));
+	  HAL_Delay(10);
+  }
+#endif
+
+  draw_scene();
+
+  tetris_init();
   while (1)
   {
+    uint8_t input = 0;
+
+    if(adcRaw[1]<10*4096/100) {
+        input |= TETRIS_INPUT_RIGHT;
+    }
+
+    if(adcRaw[1]>90*4096/100) {
+        input |= TETRIS_INPUT_LEFT;
+    }
+
+    if(adcRaw[0]<10*4096/100) {
+        input |= TETRIS_INPUT_UP;
+    }
+
+    if(adcRaw[0]>90*4096/100) {
+        input |= TETRIS_INPUT_DOWN;
+    }
+
     /* USER CODE END WHILE */
+    if(-1==tetris_iterate(input, HAL_GetTick())) {
+        for(;;);
+        return;
+    }
 
     /* USER CODE BEGIN 3 */
   }
@@ -281,7 +332,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_8;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_4;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -360,7 +411,9 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, SPI1_CS_Pin|DISP_LED_Pin|DISP_RST_Pin|DISP_D_Cn_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, SPI1_CS_Pin|DISP_RST_Pin|DISP_D_Cn_Pin, GPIO_PIN_RESET);
+
+  HAL_GPIO_WritePin(GPIOB, DISP_LED_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin : SW_IN_Pin */
   GPIO_InitStruct.Pin = SW_IN_Pin;

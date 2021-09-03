@@ -258,7 +258,7 @@ void HAL_SPI_MspInit(SPI_HandleTypeDef* hspi)
 
     GPIO_InitStruct.Pin = GPIO_PIN_4;
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     __HAL_AFIO_REMAP_SPI1_ENABLE();
