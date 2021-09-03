@@ -155,7 +155,7 @@ void ili9341_init()
 	  ili9341_send_cmd(ILI9341_PWCTR2  , "\x10", 1);             // Power control SAP[2:0];BT[3:0]
 	  ili9341_send_cmd(ILI9341_VMCTR1  , "\x3e\x28", 2);      // VCM control
 	  ili9341_send_cmd(ILI9341_VMCTR2  , "\x86", 1);             // VCM control2
-	  ili9341_send_cmd(ILI9341_MADCTL  , "\x48", 1);             // Memory Access Control
+	  ili9341_send_cmd(ILI9341_MADCTL  , "\x88", 1);             // Memory Access Control
 	  ili9341_send_cmd(ILI9341_VSCRSADD, "\x00", 1);             // Vertical scroll zero
 	  ili9341_send_cmd(ILI9341_PIXFMT  , "\x55", 1);
 	  ili9341_send_cmd(ILI9341_FRMCTR1 , "\x00\x18", 2);
